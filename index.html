@@ -1,0 +1,1471 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=5,viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="請求書メーカー">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#0d0d0d">
+<meta name="description" content="株式会社ラクト専用 請求書・見積書作成アプリ">
+<title>請求書メーカー｜ラクト</title>
+<style>
+/* ═══ CSS変数 ═══ */
+:root{
+  --gold:#d4891a;--gold2:#b87010;--goldbg:rgba(212,137,26,.12);
+  --bg:#0d0d0d;--bg2:#141414;--bg3:#1a1a1a;
+  --bdr:#252525;--bdr2:#2e2e2e;
+  --txt:#ede8df;--txt2:#8a8078;--txt3:#505050;
+  --grn:#0d2e0d;--grn2:#1a5a1a;--grntxt:#6dff6d;
+  --red:#ff3b30;
+  --safe-t:env(safe-area-inset-top,0px);
+  --safe-b:env(safe-area-inset-bottom,0px);
+  --safe-l:env(safe-area-inset-left,0px);
+  --safe-r:env(safe-area-inset-right,0px);
+}
+/* ═══ リセット ═══ */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{height:100%;-webkit-tap-highlight-color:transparent;touch-action:manipulation;scroll-behavior:smooth}
+body{
+  font-family:-apple-system,'Hiragino Sans','Yu Gothic UI','Meiryo','Noto Sans JP',sans-serif;
+  background:var(--bg);color:var(--txt);min-height:100vh;
+  overscroll-behavior:none;-webkit-font-smoothing:antialiased;
+  padding-top:var(--safe-t);
+}
+input,select,textarea,button{font-family:inherit;font-size:inherit}
+button{cursor:pointer;-webkit-appearance:none;appearance:none}
+select{-webkit-appearance:none;appearance:none}
+a{color:var(--gold);text-decoration:none}
+
+/* ═══ スクリーン ═══ */
+.scr{display:none}
+.scr.on{display:block;animation:fadeUp .2s ease}
+@keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+
+/* ═══ ヘッダー ═══ */
+#hdr{
+  background:rgba(10,10,10,.96);
+  backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);
+  border-bottom:1px solid var(--bdr);
+  padding:10px max(14px,var(--safe-r)) 10px max(14px,var(--safe-l));
+  position:sticky;top:0;z-index:300;
+  display:flex;align-items:center;justify-content:space-between;
+  min-height:52px;
+}
+.logo{display:flex;align-items:center;gap:9px;text-decoration:none}
+.logo-ico{
+  width:34px;height:34px;border-radius:8px;overflow:hidden;flex-shrink:0;
+  background:var(--bg);display:flex;align-items:center;justify-content:center;
+}
+.logo-name{font-size:14px;font-weight:700;letter-spacing:.3px;color:var(--txt)}
+.logo-sub{font-size:9px;color:var(--txt3);margin-top:1px}
+.hbtn{
+  background:transparent;border:1.5px solid var(--bdr2);color:var(--txt2);
+  padding:6px 12px;border-radius:8px;font-size:12px;font-weight:600;
+  transition:all .15s;white-space:nowrap;
+}
+.hbtn:hover,.hbtn:active{border-color:var(--gold);color:var(--txt)}
+.hbtn-g{
+  background:var(--grn);color:var(--grntxt);
+  border:1.5px solid var(--grn2);
+  padding:7px 14px;border-radius:8px;font-size:12px;font-weight:700;
+}
+.hbtn-g:hover,.hbtn-g:active{background:#122e12}
+.hdr-btns{display:flex;gap:6px;align-items:center}
+
+/* ═══ 入力 ═══ */
+.inp{
+  width:100%;background:var(--bg2);border:1.5px solid var(--bdr2);color:var(--txt);
+  padding:13px 14px;border-radius:12px;font-size:16px;outline:none;
+  transition:border .18s;-webkit-appearance:none;appearance:none;
+  display:block;
+}
+.inp:focus{border-color:var(--gold)}
+.inp::placeholder{color:var(--txt3)}
+.inp-s{
+  width:100%;background:var(--bg2);border:1px solid var(--bdr);color:var(--txt);
+  padding:8px 10px;border-radius:9px;font-size:13px;outline:none;
+  -webkit-appearance:none;appearance:none;transition:border .15s;display:block;
+}
+.inp-s:focus{border-color:var(--gold)}
+.inp-s.r{text-align:right}
+textarea.inp{resize:vertical;min-height:72px;line-height:1.6}
+
+/* ═══ ボタン ═══ */
+.btn{
+  display:block;width:100%;padding:15px;border:none;border-radius:14px;
+  font-size:16px;font-weight:900;letter-spacing:.3px;text-align:center;
+  transition:all .15s;cursor:pointer;font-family:inherit;
+}
+.btn-p{background:var(--gold);color:#111}
+.btn-p:hover{background:#e09922}
+.btn-p:active{background:var(--gold2);transform:scale(.98)}
+.btn-p:disabled{background:var(--bg3);color:var(--txt3);cursor:not-allowed}
+.btn-s{background:transparent;border:1.5px solid var(--bdr2);color:var(--txt2);padding:13px}
+.btn-s:hover,.btn-s:active{border-color:var(--gold);color:var(--txt)}
+.btn-g{background:var(--grn);color:var(--grntxt);border:1.5px solid var(--grn2)}
+.btn-g:hover,.btn-g:active{background:#122e12}
+.chip{
+  display:inline-block;background:var(--bg3);border:1px solid var(--bdr2);
+  color:var(--txt2);padding:6px 13px;border-radius:20px;font-size:12px;
+  font-weight:600;cursor:pointer;margin:3px;transition:all .15s;
+  -webkit-appearance:none;appearance:none;font-family:inherit;
+}
+.chip:hover,.chip:active,.chip.on{
+  background:var(--gold);border-color:var(--gold);color:#111;font-weight:700;
+}
+
+/* ═══ カード ═══ */
+.card{background:var(--bg2);border:1px solid var(--bdr);border-radius:16px;padding:14px;margin-bottom:10px}
+.ctitle{
+  font-size:11px;font-weight:700;color:var(--gold);letter-spacing:.4px;
+  padding-bottom:8px;border-bottom:1px solid var(--bdr);margin-bottom:12px;
+}
+.lbl{font-size:11px;color:var(--txt2);margin-bottom:4px;font-weight:600}
+.fld{margin-bottom:12px}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+
+/* ═══ タイルグリッド ═══ */
+.tile-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin-bottom:7px}
+@media(min-width:480px){.tile-grid{grid-template-columns:repeat(4,1fr)}}
+@media(min-width:700px){.tile-grid{grid-template-columns:repeat(5,1fr)}}
+.tile{
+  background:var(--bg3);border:2px solid var(--bdr);border-radius:12px;
+  padding:12px 6px;cursor:pointer;text-align:center;
+  display:flex;flex-direction:column;align-items:center;gap:4px;
+  position:relative;transition:all .15s;
+  -webkit-appearance:none;appearance:none;font-family:inherit;width:100%;
+}
+.tile:hover{border-color:var(--gold);transform:translateY(-2px)}
+.tile:active{border-color:var(--gold);transform:scale(.95)}
+.tile.sel{border-color:var(--gold);background:#1c1508}
+.tile-ico{font-size:22px;line-height:1}
+.tile-nm{font-size:10px;font-weight:700;line-height:1.3;color:var(--txt)}
+.tile-pr{font-size:10px;color:var(--gold)}
+.tile-badge{
+  position:absolute;top:4px;right:4px;
+  background:var(--gold);color:#111;
+  font-size:9px;font-weight:900;border-radius:8px;padding:1px 5px;
+}
+
+/* ═══ テンプレート ═══ */
+.tpl{
+  background:var(--bg3);border:1.5px solid var(--bdr);border-radius:12px;
+  padding:11px 13px;margin-bottom:6px;cursor:pointer;
+  display:flex;align-items:center;gap:10px;
+  width:100%;-webkit-appearance:none;appearance:none;font-family:inherit;text-align:left;
+  transition:all .15s;
+}
+.tpl:hover{border-color:var(--gold);transform:translateX(3px)}
+.tpl:active{border-color:var(--gold);background:#1c1508}
+.tpl-e{font-size:24px;flex-shrink:0}
+.tpl-n{font-size:13px;font-weight:700;margin-bottom:2px;color:var(--txt)}
+.tpl-d{font-size:10px;color:var(--txt2);line-height:1.4}
+.tpl-arr{color:var(--gold);font-size:12px;flex-shrink:0}
+
+/* ═══ カテゴリタブ ═══ */
+.cat-tabs{display:flex;overflow-x:auto;gap:5px;padding-bottom:7px;margin-bottom:9px;border-bottom:1px solid var(--bdr);scrollbar-width:none}
+.cat-tabs::-webkit-scrollbar{display:none}
+.cat-btn{
+  background:transparent;border:1.5px solid var(--bdr2);color:var(--txt2);
+  padding:5px 12px;border-radius:16px;font-size:11px;white-space:nowrap;
+  cursor:pointer;font-family:inherit;font-weight:600;flex-shrink:0;
+  -webkit-appearance:none;appearance:none;transition:all .15s;
+}
+.cat-btn:hover,.cat-btn.on{background:var(--gold);border-color:var(--gold);color:#111;font-weight:700}
+
+/* ═══ 明細行 ═══ */
+.irow{
+  display:grid;
+  grid-template-columns:1.4fr .7fr 46px 80px 80px 26px;
+  gap:4px;align-items:center;padding:8px;
+  background:var(--bg3);border:1px solid var(--bdr);border-radius:10px;margin-bottom:4px;
+  font-size:11px;
+}
+@media(max-width:380px){
+  .irow{grid-template-columns:1fr .6fr 40px 72px 72px 22px;font-size:10px}
+}
+.del{background:none;border:none;color:var(--txt3);font-size:18px;cursor:pointer;padding:0;line-height:1;transition:color .15s}
+.del:hover,.del:active{color:var(--red)}
+
+/* ═══ 合計バー ═══ */
+#tbar{
+  position:fixed;bottom:0;left:0;right:0;
+  background:rgba(10,10,10,.97);
+  backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);
+  border-top:2px solid var(--gold);
+  padding:10px max(16px,var(--safe-r)) calc(10px + var(--safe-b)) max(16px,var(--safe-l));
+  display:flex;justify-content:space-between;align-items:center;z-index:200;
+}
+
+/* ═══ ステップインジケーター ═══ */
+#step-area{padding:10px 0 4px;display:flex;flex-direction:column;align-items:center}
+.sdots{display:flex;align-items:center;gap:0;margin-bottom:2px}
+.sdot{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:900;flex-shrink:0;transition:all .3s}
+.sdot.done{background:var(--gold);color:#111}
+.sdot.cur{background:var(--gold);color:#111;box-shadow:0 0 0 4px var(--goldbg)}
+.sdot.idle{background:var(--bg3);color:var(--txt3);border:1.5px solid var(--bdr2)}
+.sline{width:36px;height:2px;transition:background .3s}
+
+/* ═══ 履歴 ═══ */
+.hist{
+  background:var(--bg3);border:1px solid var(--bdr);border-radius:12px;
+  padding:12px 14px;margin-bottom:7px;display:flex;align-items:center;gap:10px;
+  cursor:pointer;transition:border .15s;
+}
+.hist:hover,.hist:active{border-color:var(--gold)}
+.hist-info{flex:1;min-width:0}
+.hist-client{font-size:13px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.hist-meta{font-size:10px;color:var(--txt2);margin-top:2px}
+.hist-amt{font-size:14px;font-weight:900;color:var(--gold);flex-shrink:0}
+.hist-del{background:none;border:none;color:var(--txt3);font-size:16px;padding:4px;flex-shrink:0;cursor:pointer;transition:color .15s}
+.hist-del:hover,.hist-del:active{color:var(--red)}
+
+/* ═══ マスター編集 ═══ */
+.mrow{
+  display:grid;grid-template-columns:28px 1fr 1fr 54px 40px 88px 26px;
+  gap:4px;align-items:center;padding:7px 8px;
+  background:var(--bg3);border:1px solid var(--bdr);border-radius:9px;margin-bottom:4px;font-size:11px;
+}
+@media(max-width:500px){
+  .mrow{grid-template-columns:24px 1fr 50px 38px 80px 22px;font-size:10px}
+  .mrow .spec-col{display:none}
+}
+
+/* ═══ セットアップ ═══ */
+#setup{
+  position:fixed;inset:0;background:var(--bg);z-index:1000;
+  overflow-y:auto;
+  padding:calc(var(--safe-t) + 20px) max(16px,var(--safe-r)) 40px max(16px,var(--safe-l));
+}
+.setup-inner{max-width:480px;margin:0 auto}
+
+/* ═══ エラーバナー ═══ */
+#err-banner{
+  display:none;position:fixed;top:0;left:0;right:0;z-index:9000;
+  background:#2a0000;border-bottom:2px solid #e74c3c;
+  padding:12px max(14px,var(--safe-r)) 12px max(14px,var(--safe-l));
+  padding-top:calc(12px + var(--safe-t));
+  font-size:12px;color:#ff8080;line-height:1.7;
+  display:none;
+}
+#err-banner .err-close{float:right;background:none;border:none;color:#ff8080;font-size:20px;cursor:pointer;line-height:1;margin-left:10px}
+
+/* ═══ iOSバナー ═══ */
+#ios-banner{
+  display:none;
+  background:#0a2a0a;border-bottom:2px solid var(--grn2);
+  padding:12px max(14px,var(--safe-r)) 12px max(14px,var(--safe-l));
+  font-size:12px;
+}
+
+/* ═══ 印刷 ═══ */
+.screen-ui{display:block}
+.print-only{display:none}
+@media print{
+  *{-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important}
+  .screen-ui{display:none!important}
+  .print-only{display:block!important}
+  body{background:#fff!important;margin:0;padding:0}
+  @page{size:A4;margin:8mm 10mm}
+}
+.pdoc{
+  font-family:-apple-system,'Hiragino Mincho ProN','Yu Mincho','Noto Serif JP',serif;
+  font-size:9.5pt;color:#111;background:#fff;padding:8mm 10mm;min-height:260mm;
+}
+.pdoc *{font-family:-apple-system,'Hiragino Sans','Yu Gothic UI','Meiryo',sans-serif}
+.ptitle{
+  font-family:'Hiragino Mincho ProN','Yu Mincho',serif;
+  font-size:20pt;font-weight:700;letter-spacing:10px;text-align:center;margin-bottom:4mm;
+}
+.ptbl{width:100%;border-collapse:collapse;font-size:8.5pt}
+.ptbl th,.ptbl td{border:1px solid #888;padding:1.5mm 2mm;vertical-align:middle}
+.ptbl th{background:#e0e0e0;font-weight:700;text-align:center;white-space:nowrap}
+.ptbl .r{text-align:right}
+.ptbl .c{text-align:center}
+.ptbl .sub td{background:#e8e8e8;font-weight:700}
+.ptbl .fin td{background:#d0dce8;font-weight:700}
+.stamp-box{
+  width:22mm;height:22mm;border:1.5px solid #111;border-radius:2px;
+  display:flex;align-items:center;justify-content:center;flex-shrink:0;
+}
+
+/* ═══ デスクトップ最適化 ═══ */
+@media(min-width:768px){
+  #hdr{padding:10px 24px}
+  .page-content{max-width:720px;margin:0 auto;padding:14px 24px}
+  .tile-grid{grid-template-columns:repeat(5,1fr)}
+  .irow{grid-template-columns:1.4fr .7fr 50px 86px 86px 28px}
+  .row2{gap:12px}
+}
+@media(min-width:1024px){
+  .page-content{max-width:900px}
+  .tile-grid{grid-template-columns:repeat(6,1fr)}
+}
+
+/* ═══ ユーティリティ ═══ */
+.gap{height:120px}
+.hidden{display:none!important}
+.gold{color:var(--gold)}
+.divider{height:1px;background:var(--bdr);margin:14px 0}
+.mt8{margin-top:8px}
+.mt12{margin-top:12px}
+.alert{border-radius:10px;padding:11px 14px;font-size:12px;line-height:1.8;margin:8px 0;display:flex;gap:8px;align-items:flex-start}
+.alert-ok{background:#0a2a0a;border-left:3px solid var(--grn2);color:var(--grntxt)}
+.alert-warn{background:#1a1200;border-left:3px solid var(--gold);color:#d4b060}
+.alert-info{background:#0a1020;border-left:3px solid #3a6aaa;color:#7090d0}
+.alert-err{background:#2a0a0a;border-left:3px solid var(--red);color:#ff8080}
+</style>
+</head>
+<body>
+
+<!-- ═══ エラーバナー ═══ -->
+<div id="err-banner">
+  <button class="err-close" onclick="hideErr()">×</button>
+  <strong id="err-title">エラー</strong><br>
+  <span id="err-msg"></span>
+</div>
+
+<!-- ═══ iOS ホーム追加バナー ═══ -->
+<div id="ios-banner">
+  <div style="display:flex;align-items:flex-start;gap:10px;max-width:680px;margin:0 auto">
+    <div style="font-size:24px;flex-shrink:0">🔨</div>
+    <div style="flex:1">
+      <div style="font-size:13px;font-weight:900;color:var(--grntxt);margin-bottom:3px">ホーム画面に追加してアプリとして使えます</div>
+      <div style="font-size:11px;color:#7f9f7f;line-height:1.7">
+        画面下の <strong style="color:#a0d0ff">共有ボタン（□↑）</strong> → <strong style="color:#a0d0ff">「ホーム画面に追加」</strong> → 「追加」
+      </div>
+    </div>
+    <button onclick="closeBanner()" style="background:none;border:none;color:#4a7a4a;font-size:22px;cursor:pointer;padding:0;flex-shrink:0">×</button>
+  </div>
+</div>
+
+<!-- ═══ セットアップ ═══ -->
+<div id="setup">
+  <div class="setup-inner">
+    <div style="text-align:center;padding:16px 0 28px">
+      <div style="margin:0 auto 16px;width:80px;height:80px;border-radius:20px;overflow:hidden;background:var(--bg2);display:flex;align-items:center;justify-content:center">
+        <svg width="80" height="80" viewBox="0 0 192 192" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <linearGradient id="sg1" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#1a1a1a"/><stop offset="100%" stop-color="#0d0d0d"/></linearGradient>
+            <linearGradient id="sg2" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#f0a030"/><stop offset="100%" stop-color="#c07010"/></linearGradient>
+          </defs>
+          <rect width="192" height="192" rx="40" fill="url(#sg1)"/>
+          <rect x="54" y="36" width="90" height="112" rx="8" fill="#fff" opacity=".95"/>
+          <rect x="54" y="36" width="90" height="28" rx="8" fill="url(#sg2)"/>
+          <rect x="54" y="52" width="90" height="12" fill="url(#sg2)"/>
+          <rect x="62" y="43" width="74" height="5" rx="2.5" fill="#fff" opacity=".9"/>
+          <rect x="62" y="76" width="50" height="4" rx="2" fill="#111" opacity=".2"/>
+          <rect x="62" y="86" width="70" height="4" rx="2" fill="#111" opacity=".13"/>
+          <rect x="62" y="96" width="60" height="4" rx="2" fill="#111" opacity=".13"/>
+          <rect x="62" y="106" width="70" height="4" rx="2" fill="#111" opacity=".13"/>
+          <rect x="62" y="116" width="55" height="4" rx="2" fill="#111" opacity=".13"/>
+          <rect x="62" y="128" width="74" height="12" rx="4" fill="url(#sg2)" opacity=".9"/>
+          <rect x="88" y="131" width="42" height="6" rx="3" fill="#fff" opacity=".9"/>
+          <g transform="translate(106,108) rotate(-40)">
+            <rect x="-8" y="-20" width="22" height="14" rx="4" fill="url(#sg2)"/>
+            <rect x="1" y="-6" width="7" height="38" rx="3.5" fill="#c07010"/>
+          </g>
+        </svg>
+      </div>
+      <div style="font-size:22px;font-weight:900;margin-bottom:6px">請求書メーカー</div>
+      <div style="font-size:12px;color:var(--txt3);line-height:1.8">株式会社ラクト専用版 v3.0<br><strong style="color:var(--gold)">自社情報を1回だけ</strong>入力してください</div>
+    </div>
+    <div class="fld"><div class="lbl">会社名・屋号 ＊</div><input class="inp" id="s-name" placeholder="株式会社　ラクト" autocomplete="organization"></div>
+    <div class="fld"><div class="lbl">担当者名</div><input class="inp" id="s-staff" placeholder="大木　望" autocomplete="name"></div>
+    <div class="fld"><div class="lbl">住所</div><input class="inp" id="s-addr" placeholder="東京都小平市花小金井南町1-21-1　2F"></div>
+    <div class="row2 fld">
+      <div><div class="lbl">TEL</div><input class="inp" id="s-tel" placeholder="042-410-3655" type="tel"></div>
+      <div><div class="lbl">FAX</div><input class="inp" id="s-fax" placeholder="042-410-3656"></div>
+    </div>
+    <div class="fld"><div class="lbl">インボイス登録番号</div><input class="inp" id="s-tnum" placeholder="T8-0127-0101-0491"></div>
+    <div class="fld"><div class="lbl">振込先口座</div><textarea class="inp" id="s-bank" placeholder="多摩信用金庫　花小金井支店&#10;普通　No.0120590　カ）ラクト"></textarea></div>
+    <button class="btn btn-p" id="setup-btn" onclick="setupDone()">✓ 保存してはじめる</button>
+    <p style="text-align:center;font-size:10px;color:var(--txt3);margin-top:12px">※ 入力内容はこの端末にのみ保存されます</p>
+  </div>
+</div>
+
+<!-- ═══ メインUI ═══ -->
+<div class="screen-ui" id="main-ui" style="display:none">
+
+<!-- ヘッダー -->
+<div id="hdr">
+  <a class="logo" onclick="goS(0);return false" href="#">
+    <div class="logo-ico">
+      <svg width="34" height="34" viewBox="0 0 192 192" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <linearGradient id="lg1" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#1a1a1a"/><stop offset="100%" stop-color="#0d0d0d"/></linearGradient>
+          <linearGradient id="lg2" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#f0a030"/><stop offset="100%" stop-color="#c07010"/></linearGradient>
+        </defs>
+        <rect width="192" height="192" rx="40" fill="url(#lg1)"/>
+        <rect x="54" y="36" width="90" height="112" rx="8" fill="#fff" opacity=".95"/>
+        <rect x="54" y="36" width="90" height="28" rx="8" fill="url(#lg2)"/>
+        <rect x="54" y="52" width="90" height="12" fill="url(#lg2)"/>
+        <rect x="62" y="43" width="74" height="5" rx="2.5" fill="#fff" opacity=".9"/>
+        <rect x="62" y="76" width="50" height="4" rx="2" fill="#111" opacity=".2"/>
+        <rect x="62" y="86" width="70" height="4" rx="2" fill="#111" opacity=".13"/>
+        <rect x="62" y="96" width="60" height="4" rx="2" fill="#111" opacity=".13"/>
+        <rect x="62" y="106" width="70" height="4" rx="2" fill="#111" opacity=".13"/>
+        <rect x="62" y="116" width="55" height="4" rx="2" fill="#111" opacity=".13"/>
+        <rect x="62" y="128" width="74" height="12" rx="4" fill="url(#lg2)" opacity=".9"/>
+        <rect x="88" y="131" width="42" height="6" rx="3" fill="#fff" opacity=".9"/>
+        <g transform="translate(106,108) rotate(-40)">
+          <rect x="-8" y="-20" width="22" height="14" rx="4" fill="url(#lg2)"/>
+          <rect x="1" y="-6" width="7" height="38" rx="3.5" fill="#c07010"/>
+        </g>
+      </svg>
+    </div>
+    <div>
+      <div class="logo-name">請求書メーカー</div>
+      <div class="logo-sub">ラクト専用版 v3.0</div>
+    </div>
+  </a>
+  <div class="hdr-btns">
+    <button class="hbtn" id="settings-btn" onclick="goS(4)" title="設定">⚙️ 設定</button>
+    <button class="hbtn-g hidden" id="pdf-btn" onclick="doPrint()" title="PDF発行">📄 PDF発行</button>
+  </div>
+</div>
+
+<!-- ステップ表示 -->
+<div id="step-area" class="hidden">
+  <div class="sdots" id="sdots"></div>
+  <div style="display:flex;justify-content:space-between;width:136px;font-size:9px;color:var(--txt3);font-weight:600;margin-top:2px">
+    <span>客先</span><span>工事内容</span><span>発行</span>
+  </div>
+</div>
+
+<!-- ── ホーム ── -->
+<div id="sc-home" class="scr">
+  <div class="page-content" style="padding:14px">
+    <div style="display:flex;gap:8px;margin-bottom:14px">
+      <button class="chip on" id="dt-inv" onclick="setDT('invoice')" style="flex:1;padding:10px;border-radius:12px;font-size:14px;text-align:center">📄 御請求書</button>
+      <button class="chip" id="dt-est" onclick="setDT('estimate')" style="flex:1;padding:10px;border-radius:12px;font-size:14px;text-align:center">📋 御見積書</button>
+    </div>
+    <button class="btn btn-p" onclick="goS(1)" style="margin-bottom:16px;font-size:17px;padding:18px">＋ 新しく作成する</button>
+    <div id="recent-sec" class="hidden">
+      <div style="font-size:11px;color:var(--txt3);font-weight:700;margin-bottom:8px;letter-spacing:.5px">📋 過去の請求書（タップで再利用）</div>
+      <div id="hist-list"></div>
+    </div>
+    <div id="client-sec" class="hidden" style="margin-top:4px">
+      <div style="font-size:11px;color:var(--txt3);font-weight:700;margin-bottom:6px;letter-spacing:.5px">⏱ 最近の客先</div>
+      <div id="client-chips"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ── STEP 1 ── -->
+<div id="sc-1" class="scr">
+  <div class="page-content" style="padding:10px 14px">
+    <div class="card">
+      <div class="ctitle">👤 請求先 / 宛先</div>
+      <div id="past-sec" class="hidden fld">
+        <div class="lbl">過去の客先</div>
+        <div id="past-chips"></div>
+      </div>
+      <div class="fld">
+        <div class="lbl">宛名 ＊</div>
+        <input class="inp" id="f-client" placeholder="例：髙橋　幸輝　様 ／ 株式会社〇〇　御中" autocomplete="off" oninput="ST.client=this.value;ST.selC=''">
+      </div>
+    </div>
+    <div class="card">
+      <div class="ctitle">🏗 工事情報</div>
+      <div class="fld">
+        <div class="lbl">工事名称</div>
+        <input class="inp" id="f-koj" placeholder="例：髙橋様邸　給湯器交換工事" oninput="ST.kojName=this.value">
+        <div style="margin-top:8px;display:flex;flex-wrap:wrap;gap:2px">
+          <button class="chip" onclick="setKoj('邸 内装工事')">邸 内装工事</button>
+          <button class="chip" onclick="setKoj('ビル 内装工事')">ビル 内装工事</button>
+          <button class="chip" onclick="setKoj('店舗 内装工事')">店舗 内装工事</button>
+          <button class="chip" onclick="setKoj('室 原状回復')">室 原状回復</button>
+          <button class="chip" onclick="setKoj('給湯器交換工事')">給湯器交換</button>
+          <button class="chip" onclick="setKoj('外壁改修工事')">外壁改修</button>
+        </div>
+      </div>
+      <div class="fld">
+        <div class="lbl">工事場所（任意）</div>
+        <input class="inp" id="f-addr" placeholder="例：小平市回田町400-15" oninput="ST.kojAddr=this.value">
+      </div>
+      <div class="fld">
+        <div class="lbl">支払条件</div>
+        <input class="inp" id="f-pay" value="お打ち合わせによる" oninput="ST.payment=this.value">
+      </div>
+      <div class="row2 fld">
+        <div><div class="lbl">発行日</div><input class="inp" id="f-issue" type="date" oninput="ST.issueDate=this.value;autoSetDue()"></div>
+        <div><div class="lbl" id="due-lbl">支払期限</div><input class="inp" id="f-due" type="date" oninput="ST.dueDate=this.value;ST.expiry=this.value"></div>
+      </div>
+      <div class="row2">
+        <div><div class="lbl">請求番号</div><input class="inp" id="f-no" oninput="ST.docNo=this.value"></div>
+        <div><div class="lbl">担当者名</div><input class="inp" id="f-staff" oninput="ST.staff=this.value"></div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="ctitle">💬 備考（任意）</div>
+      <textarea class="inp" id="f-note" placeholder="特記事項・備考など" oninput="ST.note=this.value"></textarea>
+    </div>
+    <div style="display:flex;gap:10px">
+      <button class="btn btn-s" onclick="goS(0)" style="flex:1">← 戻る</button>
+      <button class="btn btn-p" onclick="tryS2()" style="flex:2">次へ　工事内容を選ぶ →</button>
+    </div>
+    <div class="gap"></div>
+  </div>
+</div>
+
+<!-- ── STEP 2 ── -->
+<div id="sc-2" class="scr">
+  <div class="page-content" style="padding:10px 14px;padding-bottom:90px">
+    <div class="card">
+      <div class="ctitle">⚡ テンプレートで一発入力</div>
+      <div class="cat-tabs" id="cat-tabs"></div>
+      <div id="tpl-list"></div>
+    </div>
+    <div class="card">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+        <div class="ctitle" style="margin:0;border:none;padding:0">➕ タップして追加</div>
+        <button onclick="goS(5)" style="background:transparent;border:1px solid var(--gold);color:var(--gold);padding:4px 9px;border-radius:7px;font-size:10px;font-weight:700;cursor:pointer;transition:all .15s" onmouseover="this.style.background='#1c1508'" onmouseout="this.style.background='transparent'">⚙️ 単価編集</button>
+      </div>
+      <div class="tile-grid" id="tile-grid"></div>
+      <button class="chip" onclick="showCus()" style="width:100%;padding:9px;border-radius:10px;margin-top:4px;text-align:center">＋ その他を手入力</button>
+      <div id="cus-form" class="hidden" style="background:var(--bg);border-radius:12px;padding:12px;margin-top:8px;border:1.5px solid var(--gold)">
+        <div style="display:grid;grid-template-columns:1.4fr 1fr 50px 40px 88px;gap:5px;margin-bottom:8px">
+          <div><div class="lbl">品目名</div><input class="inp-s" id="c-name" placeholder="作業内容"></div>
+          <div><div class="lbl">仕様・型番</div><input class="inp-s" id="c-spec" placeholder="型番など"></div>
+          <div><div class="lbl">単位</div>
+            <select class="inp-s" id="c-unit">
+              <option>式</option><option>m²</option><option>m</option><option>枚</option>
+              <option>本</option><option>箇所</option><option>台</option><option>個</option><option>日</option>
+            </select>
+          </div>
+          <div><div class="lbl">数量</div><input class="inp-s r" id="c-qty" type="number" value="1" min="0"></div>
+          <div><div class="lbl">単価</div><input class="inp-s r" id="c-price" type="number" placeholder="0" min="0"></div>
+        </div>
+        <div style="display:flex;gap:8px">
+          <button class="btn btn-p" onclick="addCus()" style="flex:1;padding:10px;font-size:14px">追加する</button>
+          <button class="btn btn-s" onclick="hideCus()" style="flex:0 0 48px;padding:10px">×</button>
+        </div>
+      </div>
+    </div>
+    <div id="sel-sec" class="hidden">
+      <div class="card">
+        <div class="ctitle" id="sel-cnt">📋 明細</div>
+        <div style="display:grid;grid-template-columns:1.4fr .7fr 46px 80px 80px 26px;gap:4px;padding:0 4px 6px;font-size:9px;color:var(--txt3);font-weight:700">
+          <span>品目</span><span>仕様</span><span style="text-align:right">数量</span><span style="text-align:right">単価</span><span style="text-align:right">金額</span><span></span>
+        </div>
+        <div id="sel-list"></div>
+      </div>
+    </div>
+    <div style="display:flex;gap:10px">
+      <button class="btn btn-s" onclick="goS(1)" style="flex:1">← 戻る</button>
+      <button class="btn btn-p" id="to3-btn" onclick="tryS3()" style="flex:2;opacity:.4">確認・発行へ →</button>
+    </div>
+    <div id="tbar">
+      <div>
+        <div style="font-size:10px;color:var(--txt2)" id="tb-sub">小計　¥0</div>
+        <div style="font-size:10px;color:var(--txt2)" id="tb-tax">消費税　¥0</div>
+      </div>
+      <div style="text-align:right">
+        <div style="font-size:10px;color:var(--gold);font-weight:700">合計（税込）</div>
+        <div style="font-size:26px;font-weight:900" id="tb-total">¥0</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ── STEP 3 ── -->
+<div id="sc-3" class="scr">
+  <div class="page-content" style="padding:10px 14px">
+    <div style="background:var(--grn);border:2px solid var(--grn2);border-radius:16px;padding:14px 18px;margin-bottom:10px;display:flex;justify-content:space-between;align-items:center">
+      <div>
+        <div style="font-size:10px;color:#6f9f6f" id="p-dtype"></div>
+        <div style="font-size:16px;font-weight:900;margin-top:2px" id="p-client"></div>
+        <div style="font-size:10px;color:#6f9f6f;margin-top:2px" id="p-koj"></div>
+      </div>
+      <div style="text-align:right">
+        <div style="font-size:10px;color:var(--grntxt)">ご請求金額（税込）</div>
+        <div style="font-size:28px;font-weight:900" id="p-total"></div>
+      </div>
+    </div>
+    <div style="display:flex;gap:8px;margin-bottom:10px">
+      <button class="btn btn-s" onclick="goS(2)" style="flex:1">← 修正する</button>
+      <button class="btn btn-g" onclick="doPrint()" style="flex:2;font-size:15px">📄 PDF発行・印刷</button>
+    </div>
+    <div class="alert alert-info" style="margin-bottom:10px">
+      <span style="font-size:16px">📱</span>
+      <div>
+        <strong style="color:#a0c8ff">iPhoneでPDF保存：</strong>
+        「PDF発行」→ 印刷プレビューで<strong style="color:#a0c8ff">2本指でピンチアウト（広げる）</strong>→「共有」→「"ファイル"に保存」またはLINEで送信
+      </div>
+    </div>
+    <div id="preview-wrap" style="background:#fff;border-radius:8px;overflow:hidden;box-shadow:0 8px 40px rgba(0,0,0,.5);margin-bottom:10px"></div>
+    <button class="btn btn-s" onclick="startNew()" id="next-btn">＋ 次の請求書を作成する</button>
+    <div class="gap"></div>
+  </div>
+</div>
+
+<!-- ── 設定 ── -->
+<div id="sc-4" class="scr">
+  <div class="page-content" style="padding:14px">
+    <div style="font-size:18px;font-weight:900;margin-bottom:4px">⚙️ 設定</div>
+    <div style="font-size:12px;color:var(--txt2);margin-bottom:16px">変更後「保存」をタップしてください</div>
+    <div class="card">
+      <div class="ctitle">🏢 自社情報</div>
+      <div class="fld"><div class="lbl">会社名・屋号</div><input class="inp" id="set-name"></div>
+      <div class="fld"><div class="lbl">担当者名</div><input class="inp" id="set-staff"></div>
+      <div class="fld"><div class="lbl">住所</div><input class="inp" id="set-addr"></div>
+      <div class="row2 fld">
+        <div><div class="lbl">TEL</div><input class="inp" id="set-tel"></div>
+        <div><div class="lbl">FAX</div><input class="inp" id="set-fax"></div>
+      </div>
+      <div class="fld"><div class="lbl">インボイス登録番号</div><input class="inp" id="set-tnum"></div>
+      <div class="fld"><div class="lbl">振込先口座</div><textarea class="inp" id="set-bank"></textarea></div>
+    </div>
+    <div class="card">
+      <div class="ctitle">📲 アプリとして使う方法</div>
+      <div class="alert alert-info">
+        <span style="font-size:16px">🍎</span>
+        <div>
+          <strong style="color:#a0c8ff">iPhone：</strong>
+          SafariでURLを開く → 下の<strong style="color:#a0c8ff">共有ボタン（□↑）</strong> → 「ホーム画面に追加」→「追加」
+        </div>
+      </div>
+      <div class="alert alert-info" style="margin-top:8px">
+        <span style="font-size:16px">🖥</span>
+        <div>
+          <strong style="color:#a0c8ff">デスクトップ（Chrome）：</strong>
+          URLを開く → アドレスバー右端の<strong style="color:#a0c8ff">📥アイコン</strong>をクリック →「インストール」
+        </div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="ctitle">🗑 データ管理</div>
+      <button onclick="exportData()" class="btn btn-s" style="margin-bottom:8px;font-size:13px">📤 データをエクスポート</button>
+      <button onclick="clearHistory()" class="btn btn-s" style="font-size:13px;color:var(--red);border-color:var(--red)">🗑 履歴を全件削除</button>
+    </div>
+    <button class="btn btn-p" onclick="saveSettings()" id="save-settings-btn">✓ 保存する</button>
+    <button class="btn btn-s" onclick="goS(0)" style="margin-top:8px">← ホームへ戻る</button>
+    <div class="gap"></div>
+  </div>
+</div>
+
+<!-- ── 単価マスター ── -->
+<div id="sc-5" class="scr">
+  <div class="page-content" style="padding:14px">
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:4px">
+      <button onclick="goS(2)" style="background:none;border:none;color:var(--gold);font-size:22px;cursor:pointer;padding:0;line-height:1">←</button>
+      <div style="font-size:18px;font-weight:900">⚙️ 単価マスター</div>
+    </div>
+    <div style="font-size:12px;color:var(--txt2);margin-bottom:14px">品目・単価を変更できます。変更後は即反映されます。</div>
+    <div style="display:grid;grid-template-columns:28px 1fr 1fr 54px 40px 88px 26px;gap:4px;padding:0 4px 6px;font-size:9px;color:var(--txt3);font-weight:700" class="spec-col">
+      <span></span><span>品目名</span><span>仕様</span><span style="text-align:right">単位</span><span></span><span style="text-align:right">単価（円）</span><span></span>
+    </div>
+    <div id="master-list"></div>
+    <button class="chip" onclick="addMasterItem()" style="width:100%;padding:9px;border-radius:10px;margin-top:4px;text-align:center">＋ 品目を追加</button>
+    <div style="display:flex;gap:8px;margin-top:12px">
+      <button class="btn btn-s" onclick="resetMaster()" style="flex:1;font-size:13px">リセット</button>
+      <button class="btn btn-p" onclick="saveMaster()" style="flex:2">✓ 保存して戻る</button>
+    </div>
+    <div class="gap"></div>
+  </div>
+</div>
+
+</div><!-- /#main-ui -->
+
+<!-- 印刷専用 -->
+<div class="print-only">
+  <div id="print-doc"></div>
+</div>
+
+<script>
+'use strict';
+// ══════════════════════════════════════════════════════
+//  定数・マスターデータ
+// ══════════════════════════════════════════════════════
+const VER = '3.0';
+
+const DEFAULT_MASTER = [
+  {id:'m01',icon:'📄',name:'クロス張替え',       spec:'',          unit:'m²',  price:1200},
+  {id:'m02',icon:'🪵',name:'フローリング工事',    spec:'',          unit:'m²',  price:6000},
+  {id:'m03',icon:'🎨',name:'塗装工事',            spec:'',          unit:'m²',  price:1800},
+  {id:'m04',icon:'🔩',name:'LGS壁工事',           spec:'',          unit:'m²',  price:9000},
+  {id:'m05',icon:'🏗',name:'天井工事',            spec:'',          unit:'m²',  price:7000},
+  {id:'m06',icon:'⛏',name:'解体・撤去',          spec:'',          unit:'m²',  price:5000},
+  {id:'m07',icon:'🟫',name:'タイル工事',          spec:'',          unit:'m²',  price:8000},
+  {id:'m08',icon:'🚪',name:'建具取付',            spec:'',          unit:'箇所', price:20000},
+  {id:'m09',icon:'💡',name:'電気配線工事',        spec:'',          unit:'箇所', price:15000},
+  {id:'m10',icon:'🔧',name:'設備取付',            spec:'',          unit:'箇所', price:25000},
+  {id:'m11',icon:'🪟',name:'窓枠・サッシ工事',   spec:'',          unit:'箇所', price:30000},
+  {id:'m12',icon:'🪜',name:'足場設置',            spec:'',          unit:'m²',  price:800},
+  {id:'m13',icon:'🛡',name:'養生費',              spec:'',          unit:'式',  price:30000},
+  {id:'m14',icon:'🚛',name:'廃材・産廃処分費',    spec:'',          unit:'式',  price:40000},
+  {id:'m15',icon:'📋',name:'諸経費',              spec:'',          unit:'式',  price:50000},
+  {id:'m16',icon:'🧹',name:'ハウスクリーニング',  spec:'',          unit:'式',  price:22000},
+  {id:'m17',icon:'🔍',name:'現場調査費',          spec:'',          unit:'式',  price:20000},
+  {id:'m18',icon:'📐',name:'設計・管理費',        spec:'',          unit:'式',  price:80000},
+  {id:'m19',icon:'🧱',name:'ALC・サイディング',   spec:'',          unit:'m²',  price:12000},
+  {id:'m20',icon:'🚿',name:'給湯器交換　材工',    spec:'リンナイ RUX-E2406W', unit:'式', price:170000},
+];
+
+const TP = (a) => a.map(([id,qty,spec='']) => ({masterId:id,qty,spec}));
+const DEFAULT_TEMPLATES = [
+  {id:'t01',cat:'🏠住宅', e:'🛋',name:'洋室リフォーム（6畳）',    desc:'クロス40m²＋FL10m²＋養生＋諸経費',             items:TP([['m01',40],['m02',10],['m13',1],['m15',1]])},
+  {id:'t02',cat:'🏠住宅', e:'🏡',name:'LDKリフォーム（20畳）',    desc:'クロス100m²＋FL33m²＋建具＋養生＋産廃＋諸経費', items:TP([['m01',100],['m02',33],['m08',2],['m13',1],['m14',1],['m15',1]])},
+  {id:'t03',cat:'🏠住宅', e:'🛁',name:'浴室周辺内装',             desc:'タイル＋クロス＋設備取付＋養生＋諸経費',          items:TP([['m07',15],['m01',20],['m10',2],['m13',1],['m15',1]])},
+  {id:'t04',cat:'🏠住宅', e:'🪟',name:'窓・サッシ改修',           desc:'窓枠3箇所＋クロス補修＋養生＋諸経費',            items:TP([['m11',3],['m01',10],['m13',1],['m15',1]])},
+  {id:'t05',cat:'🏠住宅', e:'🚿',name:'給湯器交換工事',           desc:'給湯器交換　材工＋廃材処分費',                    items:TP([['m20',1,'リンナイ RUX-E2406W'],['m14',1]])},
+  {id:'t06',cat:'🏢店舗', e:'🏪',name:'テナント内装一式（中）',    desc:'LGS＋クロス80m²＋天井25m²＋塗装＋養生＋産廃',   items:TP([['m04',30],['m01',80],['m05',25],['m03',20],['m13',1],['m14',1],['m15',1]])},
+  {id:'t07',cat:'🏢店舗', e:'☕',name:'カフェ・飲食店内装',       desc:'LGS＋タイル＋クロス＋天井＋電気＋養生＋産廃',    items:TP([['m04',20],['m07',10],['m01',60],['m05',20],['m09',5],['m13',1],['m14',1],['m15',1]])},
+  {id:'t08',cat:'🏢店舗', e:'🏢',name:'オフィス改装',             desc:'LGS＋クロス＋天井＋電気＋建具＋養生＋諸経費',    items:TP([['m04',40],['m01',120],['m05',40],['m09',8],['m08',4],['m13',1],['m15',1]])},
+  {id:'t09',cat:'🔄原状回復',e:'🔄',name:'賃貸原状回復（1LDK）',  desc:'クロス60m²＋FL20m²＋解体＋養生＋産廃＋諸経費',  items:TP([['m01',60],['m02',20],['m06',5],['m13',1],['m14',1],['m15',1]])},
+  {id:'t10',cat:'🔄原状回復',e:'🏬',name:'テナント原状回復',       desc:'解体撤去＋クロス＋天井＋産廃＋諸経費',           items:TP([['m06',30],['m01',80],['m05',25],['m14',1],['m15',1]])},
+  {id:'t11',cat:'🔄原状回復',e:'🧹',name:'原状回復＋クリーニング', desc:'クロス補修＋塗装＋クリーニング＋諸経費',          items:TP([['m01',20],['m03',10],['m16',1],['m15',1]])},
+  {id:'t12',cat:'🏗外装',  e:'🏗',name:'外壁改修工事',            desc:'ALC/サイディング＋塗装＋足場＋養生＋産廃',        items:TP([['m19',80],['m03',80],['m12',100],['m13',1],['m14',1],['m15',1]])},
+  {id:'t13',cat:'🏗外装',  e:'🏛',name:'マンション共用部改装',     desc:'クロス＋FL＋塗装＋建具＋養生＋産廃＋設計管理',   items:TP([['m01',200],['m02',50],['m03',50],['m08',8],['m13',1],['m14',1],['m18',1]])},
+  {id:'t14',cat:'📋調査',  e:'📐',name:'現場調査＋設計',          desc:'現場調査費＋設計・管理費',                        items:TP([['m17',1],['m18',1]])},
+];
+const UNITS = ['式','m²','m','枚','本','箇所','台','個','日','時間'];
+const CATS  = ['すべて',...[...new Set(DEFAULT_TEMPLATES.map(t=>t.cat))]];
+
+// ══════════════════════════════════════════════════════
+//  ストレージ（エラーハンドリング付き）
+// ══════════════════════════════════════════════════════
+const LS = {
+  get(k, def) {
+    try { const v = localStorage.getItem(k); return v !== null ? JSON.parse(v) : def; }
+    catch(e) { console.warn('LS.get error:', k, e); return def; }
+  },
+  set(k, v) {
+    try { localStorage.setItem(k, JSON.stringify(v)); return true; }
+    catch(e) {
+      if (e.name === 'QuotaExceededError') showErr('ストレージ容量不足', '古い履歴を削除してください。');
+      else console.warn('LS.set error:', k, e);
+      return false;
+    }
+  },
+  del(k) { try { localStorage.removeItem(k); } catch(e) {} }
+};
+
+// ══════════════════════════════════════════════════════
+//  状態
+// ══════════════════════════════════════════════════════
+let MY = null;
+let MASTER = [];
+let HISTORY = [];
+let ST = {
+  docType:'invoice', step:0,
+  docNo:'001', clients:[], selC:'',
+  client:'', kojName:'', kojAddr:'', payment:'お打ち合わせによる',
+  issueDate:td(), dueDate:addD(td(),30), expiry:addD(td(),30),
+  staff:'', note:'',
+  items:[], selCat:'すべて',
+};
+let _uid = 0;
+const uid = () => String(++_uid);
+let editMaster = [];
+
+// ══════════════════════════════════════════════════════
+//  ヘルパー
+// ══════════════════════════════════════════════════════
+function td() { return new Date().toISOString().slice(0,10); }
+function addD(s, n) {
+  try { const d = new Date(s); d.setDate(d.getDate()+n); return d.toISOString().slice(0,10); }
+  catch(e) { return s; }
+}
+function toWar(s) {
+  if (!s) return '';
+  try {
+    const [y,m,d] = s.split('-');
+    const yr = parseInt(y,10);
+    const e = yr>=2019?'令和':yr>=1989?'平成':'昭和';
+    const ey = yr>=2019?yr-2018:yr>=1989?yr-1988:yr-1925;
+    return `${e}${ey}年${parseInt(m,10)}月${parseInt(d,10)}日`;
+  } catch(e) { return s; }
+}
+function yen(n) { return '¥' + Number(n||0).toLocaleString('ja-JP'); }
+function yN(n)  { return Number(n||0).toLocaleString('ja-JP'); }
+function tots() {
+  const sub = ST.items.reduce((s,i) => s + Math.round(Number(i.qty||0) * Number(i.price||0)), 0);
+  const tax = Math.floor(sub * 0.1);
+  return {sub, tax, total: sub + tax};
+}
+function mmap() { return Object.fromEntries(MASTER.map(m => [m.id, m])); }
+function esc(s) {
+  if (!s) return '';
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+function V(id) {
+  const el = document.getElementById(id);
+  return el ? el.value : '';
+}
+
+// ══════════════════════════════════════════════════════
+//  エラーハンドリング
+// ══════════════════════════════════════════════════════
+window.addEventListener('error', (e) => {
+  console.error('Global error:', e.message, e.filename, e.lineno);
+  showErr('予期しないエラー', e.message + '（処理を続行できます）');
+});
+window.addEventListener('unhandledrejection', (e) => {
+  console.error('Unhandled promise rejection:', e.reason);
+});
+
+function showErr(title, msg) {
+  const b = document.getElementById('err-banner');
+  if (!b) return;
+  document.getElementById('err-title').textContent = title;
+  document.getElementById('err-msg').textContent = msg;
+  b.style.display = 'block';
+  setTimeout(() => { if(b) b.style.display='none'; }, 8000);
+}
+function hideErr() {
+  const b = document.getElementById('err-banner');
+  if (b) b.style.display = 'none';
+}
+
+// ══════════════════════════════════════════════════════
+//  起動
+// ══════════════════════════════════════════════════════
+window.addEventListener('DOMContentLoaded', () => {
+  try {
+    MY      = LS.get('rk-my', null);
+    MASTER  = LS.get('rk-master', null) || JSON.parse(JSON.stringify(DEFAULT_MASTER));
+    HISTORY = LS.get('rk-hist', []);
+    ST.clients = LS.get('rk-clients', []);
+    const savedNo = parseInt(LS.get('rk-no', '0'), 10);
+    ST.docNo = String(isNaN(savedNo) ? 1 : savedNo + 1).padStart(3, '0');
+
+    // データ整合性チェック
+    if (!Array.isArray(MASTER) || MASTER.length === 0) MASTER = JSON.parse(JSON.stringify(DEFAULT_MASTER));
+    if (!Array.isArray(HISTORY)) HISTORY = [];
+    if (!Array.isArray(ST.clients)) ST.clients = [];
+
+    if (MY && MY.name) {
+      document.getElementById('setup').style.display = 'none';
+      document.getElementById('main-ui').style.display = 'block';
+      goS(0);
+      initBanner();
+    }
+
+    // PWAマニフェスト（動的生成）
+    setupPWA();
+
+    // デスクトップ：インストール促進
+    window.addEventListener('beforeinstallprompt', (e) => {
+      e.preventDefault();
+      window._pwaPrompt = e;
+    });
+
+  } catch(e) {
+    console.error('Boot error:', e);
+    showErr('起動エラー', '初期化に失敗しました。ページを再読み込みしてください。');
+  }
+});
+
+function setupPWA() {
+  try {
+    const icons = [{
+      src: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'%3E%3Cdefs%3E%3ClinearGradient id='a' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3E%3Cstop offset='0%25' stop-color='%231a1a1a'/%3E%3Cstop offset='100%25' stop-color='%230d0d0d'/%3E%3C/linearGradient%3E%3ClinearGradient id='b' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3E%3Cstop offset='0%25' stop-color='%23f0a030'/%3E%3Cstop offset='100%25' stop-color='%23c07010'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='192' height='192' rx='40' fill='url(%23a)'/%3E%3Crect x='54' y='36' width='90' height='112' rx='8' fill='%23fff' opacity='.95'/%3E%3Crect x='54' y='36' width='90' height='28' rx='8' fill='url(%23b)'/%3E%3Crect x='54' y='52' width='90' height='12' fill='url(%23b)'/%3E%3Crect x='62' y='43' width='74' height='5' rx='2.5' fill='%23fff' opacity='.9'/%3E%3Crect x='62' y='76' width='50' height='4' rx='2' fill='%23111' opacity='.2'/%3E%3Crect x='62' y='86' width='70' height='4' rx='2' fill='%23111' opacity='.13'/%3E%3Crect x='62' y='128' width='74' height='12' rx='4' fill='url(%23b)' opacity='.9'/%3E%3Crect x='88' y='131' width='42' height='6' rx='3' fill='%23fff' opacity='.9'/%3E%3Cg transform='translate(106%2C108) rotate(-40)'%3E%3Crect x='-8' y='-20' width='22' height='14' rx='4' fill='url(%23b)'/%3E%3Crect x='1' y='-6' width='7' height='38' rx='3.5' fill='%23c07010'/%3E%3C/g%3E%3C/svg%3E",
+      sizes:'192x192', type:'image/svg+xml', purpose:'any maskable'
+    }];
+    const mf = {
+      name:'請求書メーカー｜ラクト',short_name:'請求書メーカー',
+      description:'株式会社ラクト専用 請求書・見積書作成アプリ v'+VER,
+      display:'standalone',orientation:'portrait',
+      background_color:'#0d0d0d',theme_color:'#0d0d0d',
+      start_url:location.href.split('?')[0],
+      icons
+    };
+    const lk = document.createElement('link');
+    lk.rel = 'manifest';
+    lk.href = URL.createObjectURL(new Blob([JSON.stringify(mf)], {type:'application/json'}));
+    document.head.appendChild(lk);
+  } catch(e) { console.warn('PWA setup error:', e); }
+}
+
+function initBanner() {
+  const isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent);
+  const isStandalone = window.navigator.standalone === true ||
+    window.matchMedia('(display-mode: standalone)').matches;
+  const closed = LS.get('rk-banner','') === 'closed';
+  if (isIOS && !isStandalone && !closed) {
+    const b = document.getElementById('ios-banner');
+    if (b) setTimeout(() => { b.style.display='block'; }, 2000);
+  }
+}
+function closeBanner() {
+  const b = document.getElementById('ios-banner');
+  if (b) b.style.display = 'none';
+  LS.set('rk-banner', 'closed');
+}
+
+// ══════════════════════════════════════════════════════
+//  セットアップ
+// ══════════════════════════════════════════════════════
+function setupDone() {
+  const name = V('s-name').trim();
+  if (!name) { showErr('入力エラー', '会社名・屋号を入力してください'); return; }
+  MY = {
+    name, staff:V('s-staff'), addr:V('s-addr'),
+    tel:V('s-tel'), fax:V('s-fax'), tnum:V('s-tnum'), bank:V('s-bank')
+  };
+  if (!LS.set('rk-my', MY)) { showErr('保存エラー', 'データの保存に失敗しました'); return; }
+  document.getElementById('setup').style.display = 'none';
+  document.getElementById('main-ui').style.display = 'block';
+  goS(0);
+  initBanner();
+}
+
+// ══════════════════════════════════════════════════════
+//  ナビゲーション
+// ══════════════════════════════════════════════════════
+const SCR_IDS = ['home','1','2','3','4','5'];
+function goS(idx) {
+  try {
+    ST.step = idx;
+    SCR_IDS.forEach(id => {
+      const el = document.getElementById('sc-'+id);
+      if (el) el.classList.remove('on');
+    });
+    const sc = document.getElementById('sc-'+SCR_IDS[idx]);
+    if (sc) sc.classList.add('on');
+    const sa = document.getElementById('step-area');
+    if (sa) sa.className = (idx>=1&&idx<=3) ? '' : 'hidden';
+    const pb = document.getElementById('pdf-btn');
+    if (pb) pb.className = idx===3 ? 'hbtn-g' : 'hbtn-g hidden';
+    const sb = document.getElementById('settings-btn');
+    if (sb) sb.style.display = idx>=4 ? 'none' : '';
+    const tb = document.getElementById('tbar');
+    if (tb) tb.style.display = idx===2 ? 'flex' : 'none';
+    renderDots();
+    if(idx===0) renderHome();
+    if(idx===1) renderS1();
+    if(idx===2) renderS2();
+    if(idx===3) renderS3();
+    if(idx===4) renderSettings();
+    if(idx===5) renderMaster();
+    window.scrollTo(0,0);
+  } catch(e) {
+    console.error('goS error:', e);
+    showErr('画面切替エラー', e.message);
+  }
+}
+
+function renderDots() {
+  const s = ST.step;
+  const el = document.getElementById('sdots');
+  if (!el) return;
+  el.innerHTML = `
+    <div class="sdot ${s>1?'done':s===1?'cur':'idle'}">${s>1?'✓':'1'}</div>
+    <div class="sline" style="background:${s>1?'var(--gold)':'var(--bdr)'}"></div>
+    <div class="sdot ${s>2?'done':s===2?'cur':'idle'}">${s>2?'✓':'2'}</div>
+    <div class="sline" style="background:${s>2?'var(--gold)':'var(--bdr)'}"></div>
+    <div class="sdot ${s===3?'cur':'idle'}">3</div>`;
+}
+
+// ══════════════════════════════════════════════════════
+//  ホーム
+// ══════════════════════════════════════════════════════
+function renderHome() {
+  // 履歴
+  const hl = document.getElementById('hist-list');
+  const rs = document.getElementById('recent-sec');
+  if (hl && rs) {
+    if (HISTORY.length > 0) {
+      rs.classList.remove('hidden');
+      hl.innerHTML = '';
+      HISTORY.slice(0,5).forEach((h,i) => {
+        const d = document.createElement('div');
+        d.className = 'hist';
+        d.innerHTML = `
+          <div class="hist-info">
+            <div class="hist-client">${esc(h.client)}</div>
+            <div class="hist-meta">${h.docType==='invoice'?'請求書':'見積書'} No.${esc(h.docNo)} ／ ${toWar(h.issueDate)}</div>
+          </div>
+          <div class="hist-amt">${yen(h.total)}</div>
+          <button class="hist-del" title="削除" onclick="delHist(${i});event.stopPropagation()">×</button>`;
+        d.onclick = () => loadHist(h);
+        hl.appendChild(d);
+      });
+    } else rs.classList.add('hidden');
+  }
+  // 客先チップ
+  const cc = document.getElementById('client-chips');
+  const cs = document.getElementById('client-sec');
+  if (cc && cs) {
+    if (ST.clients.length > 0) {
+      cs.classList.remove('hidden');
+      cc.innerHTML = '';
+      ST.clients.forEach(c => {
+        const b = document.createElement('button');
+        b.className = 'chip'; b.textContent = c;
+        b.onclick = () => { ST.selC=c; ST.client=c; goS(1); };
+        cc.appendChild(b);
+      });
+    } else cs.classList.add('hidden');
+  }
+}
+
+function setDT(t) {
+  ST.docType = t;
+  const inv = document.getElementById('dt-inv');
+  const est = document.getElementById('dt-est');
+  if(inv) { inv.className = 'chip'+(t==='invoice'?' on':''); inv.style.cssText='flex:1;padding:10px;border-radius:12px;font-size:14px;text-align:center'; }
+  if(est) { est.className = 'chip'+(t==='estimate'?' on':''); est.style.cssText='flex:1;padding:10px;border-radius:12px;font-size:14px;text-align:center'; }
+}
+
+function loadHist(h) {
+  try {
+    ST = {...ST, ...h, items: (h.items||[]).map(i => ({...i, id:uid()})) };
+    goS(1);
+  } catch(e) { showErr('履歴読込エラー', e.message); }
+}
+function delHist(i) {
+  if (!confirm('この履歴を削除しますか？')) return;
+  HISTORY.splice(i, 1);
+  LS.set('rk-hist', HISTORY);
+  renderHome();
+}
+function clearHistory() {
+  if (!confirm('全件の履歴を削除しますか？')) return;
+  HISTORY = [];
+  LS.set('rk-hist', HISTORY);
+  renderHome();
+}
+
+// ══════════════════════════════════════════════════════
+//  STEP 1
+// ══════════════════════════════════════════════════════
+function renderS1() {
+  const set = (id, val) => { const el=document.getElementById(id); if(el) el.value = val||''; };
+  set('f-client', ST.client);
+  set('f-koj',    ST.kojName);
+  set('f-addr',   ST.kojAddr);
+  set('f-pay',    ST.payment || 'お打ち合わせによる');
+  set('f-issue',  ST.issueDate);
+  set('f-due',    ST.docType==='estimate' ? ST.expiry : ST.dueDate);
+  set('f-no',     ST.docNo);
+  set('f-staff',  ST.staff || (MY&&MY.staff) || '');
+  set('f-note',   ST.note);
+  const dl = document.getElementById('due-lbl');
+  if(dl) dl.textContent = ST.docType==='estimate' ? '見積有効期限' : '支払期限';
+
+  const pc = document.getElementById('past-chips');
+  const ps = document.getElementById('past-sec');
+  if(pc && ps) {
+    if(ST.clients.length > 0) {
+      ps.classList.remove('hidden');
+      pc.innerHTML = '';
+      ST.clients.forEach(c => {
+        const b = document.createElement('button');
+        b.className = 'chip'+(ST.selC===c?' on':''); b.textContent = c;
+        b.onclick = () => { ST.selC=c; ST.client=c; const el=document.getElementById('f-client'); if(el) el.value=c; };
+        pc.appendChild(b);
+      });
+    } else ps.classList.add('hidden');
+  }
+}
+
+function setKoj(p) {
+  ST.kojName = '〇〇' + p;
+  const el = document.getElementById('f-koj');
+  if(el) el.value = ST.kojName;
+}
+function autoSetDue() {
+  const d = addD(ST.issueDate, 30);
+  ST.dueDate = d; ST.expiry = d;
+  const el = document.getElementById('f-due');
+  if(el) el.value = d;
+}
+
+function tryS2() {
+  const clientEl = document.getElementById('f-client');
+  const name = (clientEl ? clientEl.value.trim() : ST.client) || ST.selC;
+  if (!name) { showErr('入力エラー', '宛名を入力してください'); if(clientEl) clientEl.focus(); return; }
+  ST.client  = name;
+  ST.kojName = V('f-koj');
+  ST.kojAddr = V('f-addr');
+  ST.payment = V('f-pay') || 'お打ち合わせによる';
+  ST.issueDate = V('f-issue') || td();
+  const due = V('f-due');
+  ST.dueDate = due || addD(ST.issueDate,30);
+  ST.expiry  = due || addD(ST.issueDate,30);
+  ST.docNo   = V('f-no') || ST.docNo;
+  ST.staff   = V('f-staff');
+  ST.note    = V('f-note');
+  if (!ST.clients.includes(name)) ST.clients = [name, ...ST.clients].slice(0,8);
+  LS.set('rk-clients', ST.clients);
+  goS(2);
+}
+
+// ══════════════════════════════════════════════════════
+//  STEP 2
+// ══════════════════════════════════════════════════════
+function renderS2() {
+  renderCats(); renderTpls(); renderTiles(); renderSel();
+}
+
+function renderCats() {
+  const el = document.getElementById('cat-tabs');
+  if(!el) return;
+  el.innerHTML = '';
+  CATS.forEach(c => {
+    const b = document.createElement('button');
+    b.className = 'cat-btn'+(ST.selCat===c?' on':'');
+    b.textContent = c;
+    b.onclick = () => { ST.selCat=c; renderCats(); renderTpls(); };
+    el.appendChild(b);
+  });
+}
+
+function renderTpls() {
+  const el = document.getElementById('tpl-list');
+  if(!el) return;
+  el.innerHTML = '';
+  DEFAULT_TEMPLATES
+    .filter(t => ST.selCat==='すべて' || t.cat===ST.selCat)
+    .forEach(tpl => {
+      const b = document.createElement('button');
+      b.className = 'tpl';
+      b.innerHTML = `<span class="tpl-e">${tpl.e}</span>
+        <div class="tpl-info"><div class="tpl-n">${esc(tpl.name)}</div><div class="tpl-d">${esc(tpl.desc)}</div></div>
+        <span class="tpl-arr">選択→</span>`;
+      b.onclick = () => { loadTpl(tpl); renderTiles(); renderSel(); };
+      el.appendChild(b);
+    });
+}
+
+function loadTpl(tpl) {
+  try {
+    const mm = mmap();
+    ST.items = tpl.items
+      .map(({masterId,qty,spec}) => {
+        const m = mm[masterId];
+        return m ? {id:uid(), name:m.name, spec:spec||m.spec||'', unit:m.unit, qty, price:m.price} : null;
+      })
+      .filter(Boolean);
+    if (!ST.kojName) { ST.kojName = tpl.name; const el=document.getElementById('f-koj'); if(el) el.value=ST.kojName; }
+  } catch(e) { showErr('テンプレート読込エラー', e.message); }
+}
+
+function renderTiles() {
+  const el = document.getElementById('tile-grid');
+  if(!el) return;
+  el.innerHTML = '';
+  MASTER.forEach(m => {
+    const cnt = ST.items.filter(i => i.name===m.name).reduce((s,i) => s+Math.round(Number(i.qty)||0), 0);
+    const b = document.createElement('button');
+    b.className = 'tile'+(cnt>0?' sel':'');
+    b.innerHTML = `${cnt>0?`<div class="tile-badge">×${cnt}</div>`:''}
+      <div class="tile-ico">${m.icon}</div>
+      <div class="tile-nm">${esc(m.name)}</div>
+      <div class="tile-pr">${yen(m.price)}/${m.unit}</div>`;
+    b.onclick = () => {
+      ST.items.push({id:uid(), name:m.name, spec:m.spec||'', unit:m.unit, qty:1, price:m.price});
+      renderTiles(); renderSel();
+    };
+    el.appendChild(b);
+  });
+}
+
+function renderSel() {
+  const el  = document.getElementById('sel-list');
+  const sec = document.getElementById('sel-sec');
+  const cnt = document.getElementById('sel-cnt');
+  if(!el || !sec) return;
+  el.innerHTML = '';
+  if (ST.items.length === 0) {
+    sec.classList.add('hidden');
+  } else {
+    sec.classList.remove('hidden');
+    if(cnt) cnt.textContent = `📋 明細　${ST.items.length}件`;
+    ST.items.forEach((item, i) => {
+      const amt = Math.round(Number(item.qty||0) * Number(item.price||0));
+      const row = document.createElement('div');
+      row.className = 'irow';
+      row.innerHTML = `
+        <span style="font-size:11px;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;font-weight:600">${esc(item.name)}</span>
+        <span style="font-size:10px;color:var(--txt2);overflow:hidden;white-space:nowrap;text-overflow:ellipsis">${esc(item.spec||'')}</span>
+        <input class="inp-s r" type="number" value="${Number(item.qty)}" min="0" step="0.1" style="font-size:12px"
+          onchange="ST.items[${i}].qty=this.value;renderSel();renderTiles();updTotal()">
+        <input class="inp-s r" type="number" value="${Number(item.price)}" min="0" style="font-size:12px"
+          onchange="ST.items[${i}].price=this.value;renderSel();updTotal()">
+        <span style="font-size:11px;font-weight:700;color:var(--gold);text-align:right">${yen(amt)}</span>
+        <button class="del" title="削除"
+          onclick="ST.items.splice(${i},1);renderSel();renderTiles();updTotal()">×</button>`;
+      el.appendChild(row);
+    });
+  }
+  updTotal();
+}
+
+function updTotal() {
+  const {sub,tax,total} = tots();
+  const set = (id,v) => { const el=document.getElementById(id); if(el) el.textContent=v; };
+  set('tb-sub',  `小計　${yen(sub)}`);
+  set('tb-tax',  `消費税　${yen(tax)}`);
+  set('tb-total', yen(total));
+  const b = document.getElementById('to3-btn');
+  if(b) b.style.opacity = ST.items.length > 0 ? '1' : '0.4';
+}
+
+function showCus() { const el=document.getElementById('cus-form'); if(el) el.classList.remove('hidden'); }
+function hideCus() { const el=document.getElementById('cus-form'); if(el) el.classList.add('hidden'); }
+function addCus() {
+  const name  = V('c-name').trim();
+  const price = V('c-price');
+  if (!name)  { showErr('入力エラー', '品目名を入力してください'); return; }
+  if (!price) { showErr('入力エラー', '単価を入力してください'); return; }
+  const priceNum = Number(price);
+  if (isNaN(priceNum) || priceNum < 0) { showErr('入力エラー', '単価は0以上の数値を入力してください'); return; }
+  ST.items.push({
+    id:uid(), name,
+    spec: V('c-spec'),
+    unit: V('c-unit') || '式',
+    qty:  Math.max(0.01, Number(V('c-qty')) || 1),
+    price: priceNum
+  });
+  ['c-name','c-spec','c-price'].forEach(id => { const el=document.getElementById(id); if(el) el.value=''; });
+  const qEl = document.getElementById('c-qty'); if(qEl) qEl.value='1';
+  hideCus(); renderSel(); renderTiles();
+}
+
+function tryS3() {
+  if (ST.items.length === 0) { showErr('明細なし', '工事項目を1つ以上追加してください'); return; }
+  goS(3);
+}
+
+// ══════════════════════════════════════════════════════
+//  STEP 3
+// ══════════════════════════════════════════════════════
+function renderS3() {
+  try {
+    const {sub,tax,total} = tots();
+    const isInv = ST.docType === 'invoice';
+    const set = (id,v) => { const el=document.getElementById(id); if(el) el.textContent=v; };
+    set('p-dtype',  isInv ? '御請求書' : '御見積書');
+    set('p-client', ST.client);
+    set('p-koj',    ST.kojName);
+    set('p-total',  yen(total));
+
+    const html = buildDoc();
+    const pw = document.getElementById('preview-wrap');
+    const pd = document.getElementById('print-doc');
+    if(pw) pw.innerHTML = html;
+    if(pd) pd.innerHTML = html;
+
+    const nextNo = String(parseInt(ST.docNo,10)+1).padStart(3,'0');
+    const nb = document.getElementById('next-btn');
+    if(nb) nb.textContent = `＋ 次の請求書を作成する（No.${nextNo}）`;
+
+    LS.set('rk-no', ST.docNo);
+
+    // 履歴保存
+    const hist = {
+      client:ST.client, docType:ST.docType, docNo:ST.docNo,
+      issueDate:ST.issueDate, kojName:ST.kojName, total,
+      items: ST.items.map(i => ({...i})),
+      kojAddr:ST.kojAddr, payment:ST.payment,
+      dueDate:ST.dueDate, expiry:ST.expiry,
+      staff:ST.staff, note:ST.note,
+    };
+    HISTORY = [hist, ...HISTORY].slice(0, 20);
+    LS.set('rk-hist', HISTORY);
+  } catch(e) {
+    console.error('renderS3 error:', e);
+    showErr('表示エラー', '請求書の生成中にエラーが発生しました: ' + e.message);
+  }
+}
+
+function startNew() {
+  ST.docNo   = String(parseInt(ST.docNo,10)+1).padStart(3,'0');
+  ST.selC    = ''; ST.client  = '';
+  ST.kojName = ''; ST.kojAddr = '';
+  ST.note    = ''; ST.items   = [];
+  ST.issueDate = td();
+  ST.dueDate   = addD(td(), 30);
+  ST.expiry    = addD(td(), 30);
+  ST.payment   = 'お打ち合わせによる';
+  goS(0);
+}
+
+function doPrint() {
+  try { window.print(); }
+  catch(e) { showErr('印刷エラー', 'PDFの生成に失敗しました: ' + e.message); }
+}
+
+// ══════════════════════════════════════════════════════
+//  請求書HTML生成
+// ══════════════════════════════════════════════════════
+function buildDoc() {
+  const {sub,tax,total} = tots();
+  const isInv = ST.docType === 'invoice';
+  const staff = ST.staff || (MY&&MY.staff) || '';
+  const empties = Array.from({length: Math.max(0, 12 - ST.items.length)});
+
+  const rows = ST.items.map((it,i) => {
+    const a = Math.round(Number(it.qty||0) * Number(it.price||0));
+    return `<tr style="background:${i%2===0?'#fff':'#fafafa'}">
+      <td class="c" style="font-size:7.5pt;color:#aaa">${i+1}</td>
+      <td>${esc(it.name)}</td>
+      <td style="font-size:8.5pt;color:#333">${esc(it.spec||'')}</td>
+      <td class="c">${it.qty}</td>
+      <td class="c">${esc(it.unit)}</td>
+      <td class="r">${Number(it.price)>0?yN(it.price):''}</td>
+      <td class="r" style="font-weight:600">${a>0?yN(a):''}</td>
+      <td></td>
+    </tr>`;
+  }).join('');
+
+  const empRows = empties.map((_,i) =>
+    `<tr><td class="c" style="font-size:7.5pt;color:#ddd">${ST.items.length+i+1}</td><td colspan="7" style="height:6mm"></td></tr>`
+  ).join('');
+
+  return `<div class="pdoc">
+  <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:4mm">
+    <div style="flex:1">
+      <h1 class="ptitle">${isInv?'御　請　求　書':'御　見　積　書'}</h1>
+      <div style="font-size:15pt;font-weight:700;border-bottom:2.5px double #000;padding-bottom:1.5mm;margin-bottom:3mm;margin-top:2mm">${esc(ST.client)}&emsp;様</div>
+      <div style="font-size:9pt;margin-bottom:2mm">下記の通り${isInv?'御請求申し上げます。':'御見積申し上げます。'}</div>
+      <table style="border-collapse:collapse;margin-bottom:2mm">
+        <tr>
+          <td style="border:1px solid #888;padding:1.5mm 3mm;font-weight:700;font-size:10pt;white-space:nowrap">金　　額</td>
+          <td style="border:1px solid #888;padding:1.5mm 5mm;font-size:17pt;font-weight:700;min-width:48mm">¥${yN(total)}</td>
+          <td style="border:1px solid #888;padding:1.5mm 3mm;font-size:9pt;color:#555">（消費税込）</td>
+        </tr>
+      </table>
+      <table style="border-collapse:collapse;font-size:9.5pt">
+        <tr><td style="border:1px solid #888;padding:1.2mm 3mm;font-weight:700;background:#ececec;white-space:nowrap">工事名称</td><td style="border:1px solid #888;padding:1.2mm 3mm;min-width:64mm">${esc(ST.kojName)||'　'}</td></tr>
+        <tr><td style="border:1px solid #888;padding:1.2mm 3mm;font-weight:700;background:#ececec;white-space:nowrap">工事場所</td><td style="border:1px solid #888;padding:1.2mm 3mm">${esc(ST.kojAddr)||'　'}</td></tr>
+        <tr><td style="border:1px solid #888;padding:1.2mm 3mm;font-weight:700;background:#ececec;white-space:nowrap">支払条件</td><td style="border:1px solid #888;padding:1.2mm 3mm">${esc(ST.payment)||'お打ち合わせによる'}</td></tr>
+        ${!isInv?`<tr><td style="border:1px solid #888;padding:1.2mm 3mm;font-weight:700;background:#ececec;white-space:nowrap">見積有効期限</td><td style="border:1px solid #888;padding:1.2mm 3mm">見積り作成日より1ヵ月間と致します</td></tr>`:''}
+      </table>
+    </div>
+    <div style="margin-left:8mm;min-width:64mm">
+      <div style="text-align:right;font-size:9pt;margin-bottom:2mm;color:#555">${toWar(ST.issueDate)}</div>
+      <div style="display:flex;gap:3mm;justify-content:flex-end;align-items:flex-start">
+        <div style="font-size:9pt;line-height:1.9;text-align:right">
+          <div style="font-size:11pt;font-weight:700;margin-bottom:1mm">${esc(MY&&MY.name||'')}</div>
+          <div>${esc(MY&&MY.addr||'')}</div>
+          <div>TEL ${esc(MY&&MY.tel||'')}&emsp;FAX ${esc(MY&&MY.fax||'')}</div>
+          ${staff?`<div style="margin-top:1mm">担当&emsp;${esc(staff)}</div>`:''}
+          <div style="font-size:8pt;color:#666;margin-top:1mm">${esc(MY&&MY.tnum||'')}</div>
+        </div>
+        <div class="stamp-box"><div style="font-size:8pt;color:#c00;font-weight:700;border:2px solid #c00;border-radius:50%;width:24px;height:24px;display:flex;align-items:center;justify-content:center">印</div></div>
+      </div>
+      <div style="border:1px solid #888;padding:2mm 3mm;margin-top:3mm;font-size:9pt">
+        <div style="font-weight:700;margin-bottom:1mm">振　込　先</div>
+        <div style="line-height:1.9;white-space:pre-line">${esc(MY&&MY.bank||'')}</div>
+      </div>
+      ${isInv&&ST.dueDate?`<div style="margin-top:2mm;font-size:9pt;color:#a05010;font-weight:700;text-align:right">お支払期限：${toWar(ST.dueDate)}</div>`:''}
+    </div>
+  </div>
+  <table class="ptbl">
+    <thead>
+      <tr>
+        <th style="width:5mm">No.</th>
+        <th style="width:27%">名　称　／　部　位</th>
+        <th style="width:22%">仕　　　様</th>
+        <th style="width:8mm">数量</th>
+        <th style="width:8mm">単位</th>
+        <th style="width:12%">単　価</th>
+        <th style="width:12%">金　額</th>
+        <th style="width:15%">備考・定価（税前）</th>
+      </tr>
+    </thead>
+    <tbody>
+      ${rows}${empRows}
+      <tr class="sub"><td colspan="5" class="c">［合　　計］</td><td class="r">10%対象</td><td class="r">${yN(sub)}</td><td></td></tr>
+      <tr class="sub"><td colspan="5" class="c">［消　費　税］</td><td class="r">10%対象</td><td class="r">${yN(tax)}</td><td></td></tr>
+      <tr class="fin"><td colspan="5" class="c" style="font-size:10.5pt;font-weight:700">［税込み合計］</td><td></td><td class="r" style="font-size:10.5pt;font-weight:700">${yN(total)}</td><td></td></tr>
+    </tbody>
+  </table>
+  ${ST.note?`<div style="margin-top:3mm;font-size:9pt;padding:2mm 3mm;border:1px solid #ccc;border-radius:2px;font-family:inherit"><strong>備考：</strong>${esc(ST.note)}</div>`:''}
+</div>`;
+}
+
+// ══════════════════════════════════════════════════════
+//  設定
+// ══════════════════════════════════════════════════════
+function renderSettings() {
+  if (!MY) return;
+  const keys = ['name','staff','addr','tel','fax','tnum','bank'];
+  keys.forEach(k => { const el=document.getElementById('set-'+k); if(el) el.value=MY[k]||''; });
+}
+function saveSettings() {
+  const name = V('set-name').trim();
+  if (!name) { showErr('入力エラー', '会社名を入力してください'); return; }
+  MY = {
+    name, staff:V('set-staff'), addr:V('set-addr'),
+    tel:V('set-tel'), fax:V('set-fax'), tnum:V('set-tnum'), bank:V('set-bank')
+  };
+  if (!LS.set('rk-my', MY)) return;
+  const b = document.getElementById('save-settings-btn');
+  if(b) { b.textContent='✓ 保存しました！'; b.style.background='#34c759'; }
+  setTimeout(() => {
+    if(b) { b.textContent='✓ 保存する'; b.style.background=''; }
+    goS(0);
+  }, 1200);
+}
+
+function exportData() {
+  try {
+    const data = {
+      version: VER, exportedAt: new Date().toISOString(),
+      myInfo: MY, master: MASTER, history: HISTORY, clients: ST.clients
+    };
+    const json = JSON.stringify(data, null, 2);
+    const blob = new Blob([json], {type:'application/json'});
+    const url  = URL.createObjectURL(blob);
+    const a    = document.createElement('a');
+    a.href     = url;
+    a.download = `rakuto-invoice-backup-${td()}.json`;
+    document.body.appendChild(a); a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  } catch(e) { showErr('エクスポートエラー', e.message); }
+}
+
+// ══════════════════════════════════════════════════════
+//  マスター編集
+// ══════════════════════════════════════════════════════
+function renderMaster() {
+  editMaster = MASTER.map(m => ({...m}));
+  buildMasterUI();
+}
+function buildMasterUI() {
+  const el = document.getElementById('master-list');
+  if(!el) return;
+  el.innerHTML = '';
+  editMaster.forEach((m, i) => {
+    const row = document.createElement('div');
+    row.className = 'mrow';
+    row.innerHTML = `
+      <input class="inp-s" value="${esc(m.icon)}" style="text-align:center;padding:4px 2px" onchange="editMaster[${i}].icon=this.value">
+      <input class="inp-s" value="${esc(m.name)}" style="text-align:left" onchange="editMaster[${i}].name=this.value">
+      <input class="inp-s spec-col" value="${esc(m.spec||'')}" placeholder="型番など" style="text-align:left" onchange="editMaster[${i}].spec=this.value">
+      <select class="inp-s" onchange="editMaster[${i}].unit=this.value">
+        ${UNITS.map(u=>`<option ${u===m.unit?'selected':''}>${u}</option>`).join('')}
+      </select>
+      <span style="font-size:9px;color:var(--txt3);text-align:center">1</span>
+      <input class="inp-s r" type="number" value="${m.price}" min="0" onchange="editMaster[${i}].price=Number(this.value)">
+      <button class="del" title="削除" onclick="editMaster.splice(${i},1);buildMasterUI()">×</button>`;
+    el.appendChild(row);
+  });
+}
+function addMasterItem() {
+  editMaster.push({id:'m'+uid(), icon:'📌', name:'', spec:'', unit:'式', price:0});
+  buildMasterUI();
+}
+function resetMaster() {
+  if (!confirm('単価をデフォルトに戻しますか？')) return;
+  editMaster = JSON.parse(JSON.stringify(DEFAULT_MASTER));
+  buildMasterUI();
+}
+function saveMaster() {
+  const invalid = editMaster.filter(m => !m.name.trim());
+  if (invalid.length > 0) { showErr('入力エラー', '品目名が空の行があります'); return; }
+  MASTER = [...editMaster];
+  if (LS.set('rk-master', MASTER)) goS(2);
+}
+</script>
+</body>
+</html>
