@@ -1207,9 +1207,9 @@ textarea.inp{resize:vertical;min-height:72px;line-height:1.6}
       <div style="background:var(--bg2);border:1px solid var(--bdr);border-radius:12px;padding:12px;margin:8px 0">
         <div style="font-size:11px;color:var(--txt2);margin-bottom:6px">値引き・調整</div>
         <div style="display:flex;gap:8px;align-items:center">
-          <input class="inp" id="adj-name" value="出精値引き" style="flex:1;font-size:13px;padding:8px" oninput="ST.adjName=this.value">
+          <input class="inp" id="adj-name" value="出精値引き" style="flex:1;font-size:14px;padding:10px;min-width:100px" oninput="ST.adjName=this.value">
           <span style="color:var(--red);font-weight:700">-</span>
-          <input class="inp r" id="adj-val" type="number" value="0" min="0" style="width:120px;font-size:14px;padding:8px;color:var(--red)" oninput="ST.adjVal=Number(this.value||0);updTotal()">
+          <input class="inp r" id="adj-val" type="number" value="0" min="0" style="width:140px;font-size:16px;padding:10px;color:var(--red);font-weight:700" oninput="ST.adjVal=Number(this.value||0);updTotal()">
           <span style="font-size:11px;color:var(--txt2)">円</span>
         </div>
       </div>
@@ -1470,7 +1470,7 @@ textarea.inp{resize:vertical;min-height:72px;line-height:1.6}
 
 // ══════════════════════════════════════════════════════
 
-const VER = '1.0';
+const VER = '1.1';
 
 
 
@@ -1531,6 +1531,26 @@ const DEFAULT_MASTER = [
   {id:'m27',icon:'\ud83d\udce6',name:'\u6750\u6599\u904b\u642c\u8cbb',spec:'',unit:'\u5f0f',price:20000},
 
   {id:'m28',icon:'\ud83d\ude9a',name:'\u8eca\u4e21\u99d0\u8eca\u4ee3',spec:'',unit:'\u65e5',price:3000},
+  {id:'m29',icon:'\u2744',name:'\u30a8\u30a2\u30b3\u30f3\u4ea4\u63db\u5de5\u4e8b',spec:'',unit:'\u53f0',price:80000},
+  {id:'m30',icon:'\ud83d\udca8',name:'\u30a8\u30a2\u30b3\u30f3\u30af\u30ea\u30fc\u30cb\u30f3\u30b0',spec:'',unit:'\u53f0',price:8000},
+  {id:'m31',icon:'\ud83e\uddf9',name:'\u30cf\u30a6\u30b9\u30af\u30ea\u30fc\u30cb\u30f3\u30b0',spec:'',unit:'\u5f0f',price:35000},
+  {id:'m32',icon:'\u{1f9f4}',name:'\u6d88\u81ed\u30fb\u9664\u83cc\u51e6\u7406',spec:'',unit:'\u5f0f',price:15000},
+  {id:'m33',icon:'\ud83e\uddf1',name:'\u30af\u30c3\u30b7\u30e7\u30f3\u30d5\u30ed\u30a2\u5f35\u66ff\u3048',spec:'',unit:'m\u00b2',price:4500},
+  {id:'m34',icon:'\u{1fab9}',name:'\u7db2\u6238\u4ea4\u63db',spec:'',unit:'\u679a',price:3500},
+  {id:'m35',icon:'\ud83d\udeaa',name:'\u5efa\u5177\u4ea4\u63db\u30fb\u8abf\u6574',spec:'',unit:'\u7b87\u6240',price:15000},
+  {id:'m36',icon:'\u{1f6bf}',name:'\u6c34\u6813\u4ea4\u63db\u30fb\u4fee\u7406',spec:'',unit:'\u7b87\u6240',price:12000},
+  {id:'m37',icon:'\u{1f50c}',name:'\u30b3\u30f3\u30bb\u30f3\u30c8\u30fb\u30b9\u30a4\u30c3\u30c1\u4ea4\u63db',spec:'',unit:'\u7b87\u6240',price:3000},
+  {id:'m38',icon:'\u{1f4a1}',name:'\u7167\u660e\u5668\u5177\u4ea4\u63db',spec:'',unit:'\u53f0',price:8000},
+  {id:'m39',icon:'\u{1fa9e}',name:'\u93e1\u4ea4\u63db',spec:'',unit:'\u679a',price:12000},
+  {id:'m40',icon:'\u{1f6e0}',name:'\u30ea\u30da\u30a2\u88dc\u4fee\u3000\u5e8a\u30fb\u5efa\u5177',spec:'',unit:'\u5f0f',price:35000},
+  {id:'m41',icon:'\u{1f3a8}',name:'\u5929\u4e95\u30af\u30ed\u30b9\u5f35\u66ff\u3048',spec:'',unit:'m\u00b2',price:1400},
+  {id:'m42',icon:'\u{1f6bd}',name:'\u30a6\u30a9\u30b7\u30e5\u30ec\u30c3\u30c8\u4ea4\u63db',spec:'',unit:'\u5f0f',price:80000},
+  {id:'m43',icon:'\u{1f37d}',name:'\u30ad\u30c3\u30c1\u30f3\u4ea4\u63db\u5de5\u4e8b',spec:'',unit:'\u5f0f',price:250000},
+  {id:'m44',icon:'\u{1f9f9}',name:'\u63db\u6c17\u6247\u4ea4\u63db\u30fb\u6e05\u6383',spec:'',unit:'\u53f0',price:15000},
+  {id:'m45',icon:'\u{1f4cf}',name:'\u5de5\u4e8b\u7ba1\u7406\u8cbb',spec:'',unit:'\u5f0f',price:30000},
+  {id:'m46',icon:'\u{1f6bb}',name:'\u6392\u6c34\u7ba1\u6d17\u6d44',spec:'',unit:'\u5f0f',price:20000},
+  {id:'m47',icon:'\u{1faa3}',name:'\u7573\u8868\u66ff\u3048\u30fb\u65b0\u898f',spec:'',unit:'\u7573',price:5000},
+  {id:'m48',icon:'\u{1f512}',name:'\u30a4\u30f3\u30bf\u30fc\u30db\u30f3\u4ea4\u63db',spec:'',unit:'\u5f0f',price:35000},
 
 ];
 
@@ -1992,6 +2012,15 @@ function loadTplCustom(tpl) {
     }).filter(Boolean);
     if (!ST.kojName) { ST.kojName = tpl.name; const el=document.getElementById('f-koj'); if(el) el.value=ST.kojName; }
   } catch(e) { showErr('テンプレート読込エラー', e.message); }
+}
+
+function moveItem(idx, dir) {
+  const newIdx = idx + dir;
+  if (newIdx < 0 || newIdx >= ST.items.length) return;
+  const tmp = ST.items[idx];
+  ST.items[idx] = ST.items[newIdx];
+  ST.items[newIdx] = tmp;
+  renderSel(); updTotal();
 }
 
 function showHelp(){document.getElementById("help-modal").style.display="block";}
@@ -2698,9 +2727,7 @@ function renderSel() {
 
         <span style="font-size:11px;font-weight:700;color:var(--gold);text-align:right">${yen(amt)}</span>
 
-        <button class="del" title="削除"
-
-          onclick="ST.items.splice(${i},1);renderSel();renderTiles();updTotal()">×</button>`;
+        <span style="display:flex;flex-direction:column;gap:1px;align-items:center"><button style="background:none;border:none;color:var(--txt3);cursor:pointer;font-size:10px;padding:2px;line-height:1" title="上へ" onclick="moveItem(${i},-1)">▲</button><button class="del" title="削除" onclick="ST.items.splice(${i},1);renderSel();renderTiles();updTotal()">×</button><button style="background:none;border:none;color:var(--txt3);cursor:pointer;font-size:10px;padding:2px;line-height:1" title="下へ" onclick="moveItem(${i},1)">▼</button></span>`;
 
       el.appendChild(row);
 
@@ -2955,10 +2982,12 @@ function startNew() {
 
 
 function doPrint() {
+  const origTitle = document.title;
+  const dtype = ST.docType === 'invoice' ? '\u3054\u8acb\u6c42\u66f8' : '\u304a\u898b\u7a4d\u66f8';
+  document.title = (ST.client || '\u304a\u5ba2\u69d8') + '_' + dtype;
+  try { window.print(); document.title = origTitle; }
 
-  try { window.print(); }
-
-  catch(e) { showErr('印刷エラー', 'PDFの生成に失敗しました: ' + e.message); }
+  catch(e) { document.title = origTitle; showErr('印刷エラー', 'PDFの生成に失敗しました: ' + e.message); }
 
 }
 
